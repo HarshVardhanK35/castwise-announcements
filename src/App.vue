@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import { init, watchHostConfig, VERSION as IGNITION_VERSION } from "@castwise/ignition";
-import type { RotatingNoticesAppConfig } from "./announcementsTypes.ts";
+import type {
+  AnnouncementsAppConfig,
+  RotatingNoticesAppConfig,
+} from "./announcementsTypes.ts";
 import RotatingNoticesWidget from "./components/RotatingNoticesWidget.vue";
+import StatusListWidget from "./components/StatusListWidget.vue";
 
 // Own console prefix, distinct from Ignition's own "[IGNITION]" logs — so
 // devtools makes it obvious which layer (this app vs. the engine) a given
@@ -22,10 +26,9 @@ const DEFAULT_CONFIG: RotatingNoticesAppConfig = {
   boards: [
     {
       id: "demo",
-      tierWithTwo: "None",
-      urgent: ["Fire alarm test at 2:00 PM — no evacuation needed"],
-      warning: ["Wet floors in the east corridor until 11:00 AM"],
-      info: ["Guest Wi-Fi: LobbyGuest · password at the front desk"],
+      urgent: "Fire alarm test at 2:00 PM — no evacuation needed",
+      warning: "Wet floors in the east corridor until 11:00 AM",
+      info: "Guest Wi-Fi: LobbyGuest · password at the front desk",
       duration: 10,
     },
   ],
@@ -38,7 +41,7 @@ const DEFAULT_CONFIG: RotatingNoticesAppConfig = {
   audio: "None",
 };
 
-const appConfig = ref<RotatingNoticesAppConfig>(DEFAULT_CONFIG);
+const appConfig = ref<AnnouncementsAppConfig>(DEFAULT_CONFIG);
 const status = ref<"loading" | "ready">("loading");
 let hasLoadedOnce = false;
 let unwatchHostConfig: (() => void) | null = null;
@@ -47,7 +50,7 @@ let unwatchHostConfig: (() => void) | null = null;
 // already in the config itself — so APP_LOADING/APP_LOAD fire back-to-back
 // almost instantly on a reload. Sent anyway, every time, for the same
 // shared DFM-side spinner protocol every app uses.
-async function activate(config: RotatingNoticesAppConfig) {
+async function activate(config: AnnouncementsAppConfig) {
   log(hasLoadedOnce ? "config changed" : "activating for the first time", config);
   if (hasLoadedOnce) {
     window.parent?.postMessage({ type: "APP_LOADING" }, "*");
@@ -77,7 +80,7 @@ onMounted(() => {
     log("embedded — sent APP_READY, waiting for host config");
     unwatchHostConfig = watchHostConfig((config) => {
       log("received config from host", config);
-      activate(config as unknown as RotatingNoticesAppConfig);
+      activate(config as unknown as AnnouncementsAppConfig);
     });
   }
 });
@@ -88,5 +91,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <RotatingNoticesWidget v-if="status === 'ready'" :config="appConfig" />
+  <template v-if="status === 'ready'">
+    <StatusListWidget v-if="appConfig.template === 'status-list'" :config="appConfig" />
+    <RotatingNoticesWidget v-else :config="appConfig" />
+  </template>
 </template>
