@@ -18,9 +18,9 @@ defineProps<{ compact: boolean }>();
 <template>
   <div class="rn-critical" :class="{ 'rn-critical--compact': compact }">
     <svg viewBox="0 0 24 24">
-      <path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z" fill="#161b22" />
-      <rect x="10.6" y="5.8" width="2.8" height="8.6" rx="1.4" fill="#f0426a" />
-      <circle cx="12" cy="17.6" r="1.6" fill="#f0426a" />
+      <path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z" style="fill: var(--sig-panel)" />
+      <rect x="10.6" y="5.8" width="2.8" height="8.6" rx="1.4" style="fill: var(--sig-urgent)" />
+      <circle cx="12" cy="17.6" r="1.6" style="fill: var(--sig-urgent)" />
     </svg>
     <span>Critical alert</span>
   </div>
@@ -34,8 +34,8 @@ defineProps<{ compact: boolean }>();
   gap: calc(var(--u) * 0.25);
   margin: calc(var(--u) * -0.6) calc(var(--u) * -0.6) 0;
   padding: calc(var(--u) * 0.14) calc(var(--u) * 0.6);
-  background: #f0426a;
-  color: #161b22;
+  background: var(--sig-urgent);
+  color: var(--sig-panel);
   font-size: calc(var(--u) * 0.3);
   font-weight: 800;
   letter-spacing: 0.22em;

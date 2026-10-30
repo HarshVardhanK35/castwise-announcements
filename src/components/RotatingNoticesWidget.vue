@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, toRef, ref } from "vue";
+import { computed, ref } from "vue";
 import type { RotatingNoticesAppConfig } from "../announcementsTypes.ts";
 import { useBoardRotation } from "./rotatingNotices/useBoardRotation.ts";
 import { useAutoFit } from "./rotatingNotices/useAutoFit.ts";
@@ -14,7 +14,18 @@ import NoticeCardItem from "./rotatingNotices/NoticeCardItem.vue";
 // screenshots — class names (rn-board, rn-card, etc.) match that source on
 // purpose, so the two can be diffed directly if the spec ever changes.
 const props = defineProps<{ config: RotatingNoticesAppConfig }>();
-const config = toRef(props, "config");
+// While the Manage boards modal is open, the preview pins to the board being
+// typed/edited (no rotation) — editor-only, never present at real playback.
+const config = computed<RotatingNoticesAppConfig>(() => {
+  const d = props.config.editorDraft;
+  if (!d) return props.config;
+  return {
+    ...props.config,
+    boards: [
+      { id: d.id ?? "draft", urgent: d.urgent, warning: d.warning, info: d.info, duration: d.duration },
+    ],
+  };
+});
 
 const { cards } = useBoardRotation(config);
 const { sweeping } = useRealertSweep(config);
@@ -40,7 +51,7 @@ const orientation = computed<"landscape" | "portrait">(() =>
 </script>
 
 <template>
-  <div ref="rootEl" class="rn-board" :class="[shapeClass, { 'reduce-motion': config.reduceMotion }]"
+  <div ref="rootEl" class="rn-board" :data-theme="config.theme" :class="[shapeClass, { 'reduce-motion': config.reduceMotion }]"
     :style="{ '--u': `${u}px`, fontFamily: config.font }">
     <CriticalBar v-if="config.criticalMode" :compact="shape !== 'landscape-169'" />
 
@@ -61,8 +72,34 @@ const orientation = computed<"landscape" | "portrait">(() =>
   overflow-wrap: anywhere;
   display: flex;
   flex-direction: column;
-  background: #0d1117;
-  color: #e6edf3;
+  background: var(--sig-bg);
+  color: var(--sig-text);
+  /* Colour tokens — spec §4 (dark default, light via data-theme). */
+  --sig-bg: #0d1117;
+  --sig-panel: #161b22;
+  --sig-text: #e6edf3;
+  --sig-urgent: #f0426a;
+  --sig-warn: #e3b341;
+  --sig-info: #3fb950;
+  --sig-warn-b: rgba(227, 179, 65, 0.55);
+  --sig-info-b: rgba(63, 185, 80, 0.45);
+  --sig-sh: rgba(0, 0, 0, 0.6);
+  --sig-sh2: rgba(0, 0, 0, 0.55);
+  --sig-sweep: rgba(255, 255, 255, 0.18);
+}
+
+.rn-board[data-theme="light"] {
+  --sig-bg: #f6f8fa;
+  --sig-panel: #ffffff;
+  --sig-text: #1f2328;
+  --sig-urgent: #cf2250;
+  --sig-warn: #9a6700;
+  --sig-info: #1a7f37;
+  --sig-warn-b: #d4a72c;
+  --sig-info-b: #4ac26b;
+  --sig-sh: rgba(31, 35, 40, 0.14);
+  --sig-sh2: rgba(31, 35, 40, 0.1);
+  --sig-sweep: rgba(207, 34, 80, 0.28);
 }
 
 .rn-board--169 {

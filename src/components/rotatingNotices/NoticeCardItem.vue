@@ -37,7 +37,6 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
     :class="[
       `rn-card--${card.tier}`,
       {
-        'rn-card--peer': card.peer,
         'rn-card--portrait': orientation === 'portrait',
         'entrance-on': staggeredEntrance,
         'glow-on': card.tier === 'urgent' && glowEnabled,
@@ -52,19 +51,19 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
   >
     <div class="rn-icon" :class="{ 'rn-tile': card.tier !== 'info' }">
       <svg v-if="card.tier === 'urgent'" viewBox="0 0 24 24">
-        <path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z" fill="#f0426a" />
-        <rect x="10.6" y="5.8" width="2.8" height="8.6" rx="1.4" fill="#161b22" />
-        <circle cx="12" cy="17.6" r="1.6" fill="#161b22" />
+        <path d="M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z" style="fill: var(--sig-urgent)" />
+        <rect x="10.6" y="5.8" width="2.8" height="8.6" rx="1.4" style="fill: var(--sig-panel)" />
+        <circle cx="12" cy="17.6" r="1.6" style="fill: var(--sig-panel)" />
       </svg>
       <svg v-else-if="card.tier === 'warning'" viewBox="0 0 24 24">
-        <path d="M10.3 3.4a2 2 0 0 1 3.4 0l8.6 15.1a2 2 0 0 1-1.7 3H3.4a2 2 0 0 1-1.7-3z" fill="#e3b341" />
-        <rect x="10.7" y="8.4" width="2.6" height="7" rx="1.3" fill="#161b22" />
-        <circle cx="12" cy="18.3" r="1.45" fill="#161b22" />
+        <path d="M10.3 3.4a2 2 0 0 1 3.4 0l8.6 15.1a2 2 0 0 1-1.7 3H3.4a2 2 0 0 1-1.7-3z" style="fill: var(--sig-warn)" />
+        <rect x="10.7" y="8.4" width="2.6" height="7" rx="1.3" style="fill: var(--sig-panel)" />
+        <circle cx="12" cy="18.3" r="1.45" style="fill: var(--sig-panel)" />
       </svg>
       <svg v-else viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" fill="#3fb950" />
-        <circle cx="12" cy="7.2" r="1.6" fill="#161b22" />
-        <rect x="10.7" y="10.2" width="2.6" height="7.6" rx="1.3" fill="#161b22" />
+        <circle cx="12" cy="12" r="10" style="fill: var(--sig-info)" />
+        <circle cx="12" cy="7.2" r="1.6" style="fill: var(--sig-panel)" />
+        <rect x="10.7" y="10.2" width="2.6" height="7.6" rx="1.3" style="fill: var(--sig-panel)" />
       </svg>
     </div>
 
@@ -93,7 +92,7 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
   padding: var(--pv) calc(var(--u) * 0.5);
   border: 1px solid var(--bd);
   border-radius: var(--r);
-  background: linear-gradient(100deg, var(--tint), var(--tint0) var(--stop)), #161b22;
+  background: linear-gradient(100deg, var(--tint), var(--tint0) var(--stop)), var(--sig-panel);
   box-shadow: var(--shadow);
 }
 
@@ -150,14 +149,14 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
 /* ---- Urgent ---- */
 .rn-card--urgent {
   flex: 1 1 auto; /* grows to fill leftover board height — spec §6.2 */
-  --accent: #f0426a;
+  --accent: var(--sig-urgent);
   --pv: calc(var(--u) * 0.35);
   --r: calc(var(--u) * 0.28);
   --bd: rgba(240, 66, 106, 0.55);
   --tint: rgba(240, 66, 106, 0.17);
   --tint0: rgba(240, 66, 106, 0);
   --stop: 60%;
-  --shadow: 0 18px 40px -14px rgba(240, 66, 106, 0.4), 0 10px 24px -8px rgba(0, 0, 0, 0.6);
+  --shadow: 0 18px 40px -14px rgba(240, 66, 106, 0.4), 0 10px 24px -8px var(--sig-sh);
   --tile: rgba(240, 66, 106, 0.15);
   --ts: calc(var(--u) * 1.5);
   --is: calc(var(--u) * 0.95);
@@ -167,24 +166,17 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
   --lh: 1.06;
   --ls: -0.022em;
 }
-.rn-card--urgent.rn-card--peer {
-  --fs: calc(var(--u) * 0.9);
-  --bd: rgba(240, 66, 106, 0.5);
-  --tint: rgba(240, 66, 106, 0.14);
-  --shadow: 0 16px 36px -14px rgba(240, 66, 106, 0.32), 0 10px 24px -8px rgba(0, 0, 0, 0.6);
-}
-
 /* ---- Warning ---- */
 .rn-card--warning {
   flex: none;
-  --accent: #e3b341;
+  --accent: var(--sig-warn);
   --pv: calc(var(--u) * 0.3);
   --r: calc(var(--u) * 0.26);
-  --bd: rgba(227, 179, 65, 0.55);
+  --bd: var(--sig-warn-b);
   --tint: rgba(227, 179, 65, 0.1);
   --tint0: rgba(227, 179, 65, 0);
   --stop: 55%;
-  --shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.55);
+  --shadow: 0 8px 18px -8px var(--sig-sh2);
   --tile: rgba(227, 179, 65, 0.14);
   --ts: calc(var(--u) * 1.1);
   --is: calc(var(--u) * 0.68);
@@ -194,18 +186,13 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
   --lh: 1.12;
   --ls: -0.015em;
 }
-.rn-card--warning.rn-card--peer {
-  --fs: calc(var(--u) * 0.585);
-  --tint: rgba(227, 179, 65, 0.08);
-}
-
 /* ---- Info ---- */
 .rn-card--info {
   flex: none;
-  --accent: #3fb950;
+  --accent: var(--sig-info);
   --pv: calc(var(--u) * 0.26);
   --r: calc(var(--u) * 0.24);
-  --bd: rgba(63, 185, 80, 0.45);
+  --bd: var(--sig-info-b);
   --tint: rgba(63, 185, 80, 0.07);
   --tint0: rgba(63, 185, 80, 0);
   --stop: 50%;
@@ -219,11 +206,6 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
   --lh: 1.25;
   --ls: 0;
 }
-.rn-card--info.rn-card--peer {
-  --fs: calc(var(--u) * 0.378);
-  --tint: rgba(63, 185, 80, 0.06);
-}
-
 /* ---- Portrait (9:16) reflow — spec §7: icon+label share the top row,
    message runs full card width below, no shared icon column. ---- */
 .rn-card--portrait {
@@ -232,7 +214,7 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
   column-gap: calc(var(--u) * 0.3);
   row-gap: calc(var(--u) * 0.25);
   padding: calc(var(--pv) * 1.4) calc(var(--u) * 0.55);
-  background: linear-gradient(170deg, var(--tint), var(--tint0) var(--stop)), #161b22;
+  background: linear-gradient(170deg, var(--tint), var(--tint0) var(--stop)), var(--sig-panel);
 }
 .rn-card--portrait .rn-icon {
   justify-self: start;
@@ -282,7 +264,7 @@ const glowDelay = props.staggeredEntrance ? entranceDelay + 0.8 : 0;
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(100deg, transparent 25%, rgba(255, 255, 255, 0.18) 50%, transparent 75%);
+  background: linear-gradient(100deg, transparent 25%, var(--sig-sweep) 50%, transparent 75%);
   transform: translateX(-110%);
 }
 .rn-card--urgent.sweeping::after {
