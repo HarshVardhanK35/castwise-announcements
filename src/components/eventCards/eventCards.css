@@ -1,0 +1,222 @@
+/* Ported from z-announcement-designs/events/event-cards.css (sections 1, 2,
+   8, 12). Class names (ec-*) match that source on purpose so the two can be
+   diffed directly. The admin-UI sections (header, Inspector, lists, form
+   controls) are not part of the widget and are dropped.
+
+   Sizing: everything inside the card is in cqw (1cqw = 1% of the card's
+   width — the card is a size container), so it scales as one piece.
+   Differences from the design's preview card: it fills the whole screen
+   (no border radius / outer border), because on a real display the card IS
+   the screen. */
+
+/* ---- 1. Theme tokens (dark default, light via data-theme) ---- */
+.ec-root {
+  --ec-panel: #161b22;
+  --ec-border: #30363d;
+  --ec-border-hover: #484f58;
+  --ec-text: #e6edf3;
+  --ec-muted: #8b949e;
+  --ec-track: rgba(230, 237, 243, 0.08);
+}
+.ec-root[data-theme="light"] {
+  --ec-panel: #f6f8fa;
+  --ec-border: #d0d7de;
+  --ec-border-hover: #afb8c1;
+  --ec-text: #1f2328;
+  --ec-muted: #59636e;
+  --ec-track: rgba(31, 35, 40, 0.1);
+}
+
+/* ---- 2. Card-type palettes ---- */
+.ec-type-birthday {
+  --t-c1: #f778ba; --t-c2: #e3b341; --t-head: #fcd3e8;
+  --t-glow-br: rgba(247, 120, 186, 0.26); --t-glow-br-0: rgba(247, 120, 186, 0);
+  --t-glow-tl: rgba(227, 179, 65, 0.14); --t-glow-tl-0: rgba(227, 179, 65, 0);
+  --t-particle-1: rgba(247, 120, 186, 0.55); --t-particle-2: rgba(227, 179, 65, 0.55);
+}
+.ec-type-milestone {
+  --t-c1: #39c5cf; --t-c2: #58a6ff; --t-head: #c9f1f4;
+  --t-glow-br: rgba(57, 197, 207, 0.26); --t-glow-br-0: rgba(57, 197, 207, 0);
+  --t-glow-tl: rgba(88, 166, 255, 0.14); --t-glow-tl-0: rgba(88, 166, 255, 0);
+  --t-particle-1: rgba(57, 197, 207, 0.55); --t-particle-2: rgba(88, 166, 255, 0.55);
+}
+.ec-type-welcome {
+  --t-c1: #3fb950; --t-c2: #a2d96b; --t-head: #d3f4d9;
+  --t-glow-br: rgba(63, 185, 80, 0.26); --t-glow-br-0: rgba(63, 185, 80, 0);
+  --t-glow-tl: rgba(162, 217, 107, 0.14); --t-glow-tl-0: rgba(162, 217, 107, 0);
+  --t-particle-1: rgba(63, 185, 80, 0.55); --t-particle-2: rgba(162, 217, 107, 0.55);
+}
+.ec-type-congrats {
+  --t-c1: #a371f7; --t-c2: #e3b341; --t-head: #e4d6ff;
+  --t-glow-br: rgba(163, 113, 247, 0.26); --t-glow-br-0: rgba(163, 113, 247, 0);
+  --t-glow-tl: rgba(227, 179, 65, 0.14); --t-glow-tl-0: rgba(227, 179, 65, 0);
+  --t-particle-1: rgba(163, 113, 247, 0.55); --t-particle-2: rgba(227, 179, 65, 0.55);
+}
+.ec-type-holiday {
+  --t-c1: #f85149; --t-c2: #3fb950; --t-head: #ffd7d3;
+  --t-glow-br: rgba(248, 81, 73, 0.26); --t-glow-br-0: rgba(248, 81, 73, 0);
+  --t-glow-tl: rgba(63, 185, 80, 0.14); --t-glow-tl-0: rgba(63, 185, 80, 0);
+  --t-particle-1: rgba(248, 81, 73, 0.55); --t-particle-2: rgba(63, 185, 80, 0.55);
+}
+.ec-root[data-theme="light"] .ec-type-birthday {
+  --t-c1: #bf3989; --t-c2: #9a6700; --t-head: #4d1033;
+  --t-glow-br: rgba(249, 168, 212, 0.5); --t-glow-br-0: rgba(249, 168, 212, 0);
+  --t-glow-tl: rgba(253, 230, 138, 0.55); --t-glow-tl-0: rgba(253, 230, 138, 0);
+  --t-particle-1: rgba(191, 57, 137, 0.95); --t-particle-2: rgba(154, 103, 0, 0.95);
+}
+.ec-root[data-theme="light"] .ec-type-milestone {
+  --t-c1: #0f7b84; --t-c2: #0969da; --t-head: #0b3b40;
+  --t-glow-br: rgba(125, 211, 252, 0.5); --t-glow-br-0: rgba(125, 211, 252, 0);
+  --t-glow-tl: rgba(153, 246, 228, 0.55); --t-glow-tl-0: rgba(153, 246, 228, 0);
+  --t-particle-1: rgba(15, 123, 132, 0.95); --t-particle-2: rgba(9, 105, 218, 0.95);
+}
+.ec-root[data-theme="light"] .ec-type-welcome {
+  --t-c1: #1a7f37; --t-c2: #4d7c0f; --t-head: #0f3d1d;
+  --t-glow-br: rgba(134, 239, 172, 0.5); --t-glow-br-0: rgba(134, 239, 172, 0);
+  --t-glow-tl: rgba(217, 249, 157, 0.55); --t-glow-tl-0: rgba(217, 249, 157, 0);
+  --t-particle-1: rgba(26, 127, 55, 0.95); --t-particle-2: rgba(77, 124, 15, 0.95);
+}
+.ec-root[data-theme="light"] .ec-type-congrats {
+  --t-c1: #8250df; --t-c2: #9a6700; --t-head: #2e1065;
+  --t-glow-br: rgba(196, 181, 253, 0.5); --t-glow-br-0: rgba(196, 181, 253, 0);
+  --t-glow-tl: rgba(253, 230, 138, 0.55); --t-glow-tl-0: rgba(253, 230, 138, 0);
+  --t-particle-1: rgba(130, 80, 223, 0.95); --t-particle-2: rgba(154, 103, 0, 0.95);
+}
+.ec-root[data-theme="light"] .ec-type-holiday {
+  --t-c1: #cf222e; --t-c2: #1a7f37; --t-head: #4c0d0d;
+  --t-glow-br: rgba(252, 165, 165, 0.5); --t-glow-br-0: rgba(252, 165, 165, 0);
+  --t-glow-tl: rgba(187, 247, 208, 0.55); --t-glow-tl-0: rgba(187, 247, 208, 0);
+  --t-particle-1: rgba(207, 34, 46, 0.95); --t-particle-2: rgba(26, 127, 55, 0.95);
+}
+
+/* ---- 8. The card ---- */
+.ec-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ec-panel);
+}
+.ec-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ec-panel);
+  container-type: inline-size;
+  font-family: var(--ec-card-font);
+  color: var(--ec-text);
+}
+
+.ec-card__glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(60% 80% at 0% 0%, var(--t-glow-tl), var(--t-glow-tl-0) 60%),
+    radial-gradient(90% 120% at 100% 100%, var(--t-glow-br), var(--t-glow-br-0) 60%);
+}
+.ec-card--glow-anim .ec-card__glow { animation: ec-breathe 5s ease-in-out infinite alternate; }
+
+.ec-card__particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.ec-particle { position: absolute; border-radius: 50%; opacity: 0; line-height: 1; }
+.ec-particle svg { display: block; }
+
+.ec-card__content {
+  position: absolute; inset: 0;
+  padding: 7cqw;
+  display: flex; flex-direction: column;
+  justify-content: flex-end; align-items: flex-start;
+  gap: 1.4cqw;
+}
+.ec-card__text { display: contents; }
+
+.ec-photo {
+  position: absolute; top: 6cqw; right: 6cqw;
+  width: 30%; aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 0.5cqw solid var(--ec-border);
+}
+.ec-photo__img { position: absolute; inset: 0; background: center / cover no-repeat; }
+.ec-photo--empty {
+  overflow: visible;
+  border: 1px dashed var(--ec-border-hover);
+  display: grid; place-items: center;
+  color: var(--ec-muted); font-size: 4cqw;
+}
+
+.ec-badge {
+  display: inline-flex; align-items: center; gap: 0.8cqw;
+  padding: 0.6cqw 1.8cqw;
+  border: 0.2cqw solid var(--t-c1); border-radius: 99cqw;
+  background: var(--t-glow-br);
+  color: var(--t-head);
+  font-size: 1.9cqw; line-height: 1.3; font-weight: 600; letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.ec-badge__dot { width: 1cqw; height: 1cqw; border-radius: 50%; background: var(--t-c1); }
+
+.ec-kicker {
+  display: flex; align-items: center; gap: 1.2cqw;
+  width: 62%;
+  font-size: 2.4cqw; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--t-c1);
+}
+.ec-kicker__icon { display: inline-flex; transform-origin: 70% 80%; color: var(--t-c2); }
+.ec-kicker__icon svg { display: block; }
+
+.ec-rule {
+  display: block; width: 9cqw; height: 0.45cqw; border-radius: 1cqw;
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--t-c1), var(--t-c2));
+}
+
+.ec-title {
+  display: block; width: 62%;
+  font-size: var(--ec-title-size);
+  line-height: 1.08;
+  font-weight: var(--ec-title-weight, 600);
+  letter-spacing: var(--ec-title-tracking, -0.02em);
+  color: var(--t-head);
+  text-wrap: balance; overflow-wrap: anywhere;
+}
+.ec-title__word {
+  display: inline-block; max-width: 100%;
+  margin-right: 0.24em;
+  /* Paint room so gradient text doesn't clip descenders; negative margins
+     cancel it so line spacing is unchanged. */
+  padding: 0.06em 0 0.16em; margin-top: -0.06em; margin-bottom: -0.16em;
+  overflow-wrap: anywhere;
+}
+.ec-card--grad-head .ec-title__word {
+  background-image: linear-gradient(100deg, var(--t-head), var(--t-c2));
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+
+.ec-sub { max-width: 62%; font-size: var(--ec-sub-size); line-height: 1.3; color: var(--ec-muted); }
+.ec-message { width: 62%; font-size: var(--ec-body-size); line-height: 1.4; text-wrap: pretty; }
+
+.ec-burst { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+
+/* ---- 12. Keyframes (ambient, CSS-driven). The OS "reduce motion" setting is
+   deliberately NOT read here — Reduce motion is an explicit widget setting. ---- */
+@keyframes ec-breathe { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+@keyframes ec-rise {
+  0% { opacity: 0; transform: translateY(0); }
+  15% { opacity: 0.75; }
+  85% { opacity: 0.45; }
+  100% { opacity: 0; transform: translateY(-55cqw); }
+}
+@keyframes ec-fall {
+  0% { opacity: 0; transform: translateY(0) rotate(0); }
+  12% { opacity: 0.85; }
+  85% { opacity: 0.7; }
+  100% { opacity: 0; transform: translateY(62cqw) rotate(180deg); }
+}
+
+/* Icons inside the card scale with their text (lucide defaults to 24px). */
+.ec-kicker__icon svg,
+.ec-particle svg,
+.ec-photo--empty svg {
+  width: 1em;
+  height: 1em;
+}

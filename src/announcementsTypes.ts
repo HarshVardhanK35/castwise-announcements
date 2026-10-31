@@ -86,8 +86,59 @@ export interface StatusListAppConfig {
   } | null;
 }
 
+export type EventCardType = "birthday" | "milestone" | "welcome" | "congrats" | "holiday";
+
+// Mirrors device-fleet-manager's apps/appModals/announcements/event-cards/
+// eventCardsConfig.js: every card stores the same three text fields, and the
+// type decides what they mean (title = name / milestone title / occasion,
+// sub = role / achievement, message = wish / description / note).
+export interface EventCardData {
+  id: string;
+  type: EventCardType;
+  title: string;
+  sub: string;
+  message: string;
+  // YYYY-MM-DD or "" — optional, may be in the future.
+  eventDate: string;
+  font: string;
+  showImage: boolean;
+  image: { url: string; name: string; contentId?: string } | null;
+  // Seconds on screen.
+  duration: number;
+  // Background audio file name from the content library, or "None".
+  audio: string;
+}
+
+export interface EventCardsEffects {
+  glow: boolean;
+  particles: boolean;
+  iconMotion: boolean;
+  countUp: boolean;
+  welcomePop: boolean;
+  congratsFx: boolean;
+  holidayFx: boolean;
+  bigHead: boolean;
+  gradHead: boolean;
+  badge: boolean;
+}
+
+export interface EventCardsAppConfig {
+  template: "event-cards";
+  theme: "dark" | "light";
+  cards: EventCardData[];
+  effects: EventCardsEffects;
+  reduceMotion: boolean;
+  // Editor-only (never saved, never present at real playback): the card the
+  // Manage cards modal is typing/editing — the preview pins to it instead of
+  // rotating.
+  editorDraft?: (Omit<EventCardData, "id"> & { mode: "draft" | "editing"; id?: string }) | null;
+}
+
 // What arrives over DFM_CONFIG — the template field picks the widget.
-export type AnnouncementsAppConfig = RotatingNoticesAppConfig | StatusListAppConfig;
+export type AnnouncementsAppConfig =
+  | RotatingNoticesAppConfig
+  | StatusListAppConfig
+  | EventCardsAppConfig;
 
 // One rendered card, in final stack order (Urgent -> Warning -> Info).
 export interface NoticeCard {

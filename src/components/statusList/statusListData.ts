@@ -18,7 +18,7 @@ export interface BoardItem {
 }
 
 // SPEC §3.3: Small 1-15, Medium 16-35, Big 36+.
-export function tierOf(pct: number): Tier | null {
+function tierOf(pct: number): Tier | null {
   if (pct <= 0) return null;
   if (pct <= 15) return "small";
   if (pct <= 35) return "med";

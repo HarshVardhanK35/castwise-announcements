@@ -7,6 +7,7 @@ import type {
 } from "./announcementsTypes.ts";
 import RotatingNoticesWidget from "./components/RotatingNoticesWidget.vue";
 import StatusListWidget from "./components/StatusListWidget.vue";
+import EventCardsWidget from "./components/EventCardsWidget.vue";
 
 // Own console prefix, distinct from Ignition's own "[IGNITION]" logs — so
 // devtools makes it obvious which layer (this app vs. the engine) a given
@@ -93,6 +94,7 @@ onUnmounted(() => {
 <template>
   <template v-if="status === 'ready'">
     <StatusListWidget v-if="appConfig.template === 'status-list'" :config="appConfig" />
-    <RotatingNoticesWidget v-else :config="appConfig" />
+    <RotatingNoticesWidget v-else-if="appConfig.template === 'rotating-notices'" :config="appConfig" />
+    <EventCardsWidget v-else-if="appConfig.template === 'event-cards'" :config="appConfig" />
   </template>
 </template>
