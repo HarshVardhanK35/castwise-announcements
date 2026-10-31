@@ -32,6 +32,9 @@ export interface RotatingNoticesAppConfig {
   criticalMode: boolean;
   reduceMotion: boolean;
   audio: string;
+  // Editor-only: true while DFM's settings preview is showing this — lets an
+  // empty template explain itself instead of showing a blank screen.
+  editorPreview?: boolean;
   // Editor-only (never saved, never present at real playback): the board the
   // Manage boards modal is typing/editing — the preview pins to it instead of
   // rotating.
@@ -128,6 +131,7 @@ export interface EventCardsAppConfig {
   cards: EventCardData[];
   effects: EventCardsEffects;
   reduceMotion: boolean;
+  editorPreview?: boolean;
   // Editor-only (never saved, never present at real playback): the card the
   // Manage cards modal is typing/editing — the preview pins to it instead of
   // rotating.
