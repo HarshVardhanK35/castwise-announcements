@@ -1,8 +1,9 @@
 import type { EventCardType, EventCardsEffects } from "../../announcementsTypes.ts";
 
-// The entrance + per-card-type effects, ported from event-cards.js play()
-// (SPEC.md §8). Web Animations API on elements tagged `data-fx="…"` inside
-// the card. Ambient effects (glow, particles) are plain CSS classes.
+// The entrance + per-card-type effects, ported from the design's
+// event-card-screen.js (SPEC §7). Web Animations API on elements tagged
+// `data-fx="…"` inside the card. Ambient effects (glow, particles, flakes) are
+// plain CSS. Congratulations has no shine sweep (removed by product decision).
 
 const EASE = "cubic-bezier(.2,.8,.2,1)";
 
@@ -12,7 +13,7 @@ interface IconMotion {
   keyframes: Keyframe[];
 }
 
-// Icon motion per type (delay 650ms, ease-in-out).
+// Icon motion per type (delay 900ms, ease-in-out).
 const ICON_MOTION: Record<EventCardType, IconMotion> = {
   birthday: {
     duration: 1000,
@@ -97,7 +98,21 @@ export function playCard(card: HTMLElement, o: PlayOptions): () => void {
           { duration: 640, delay: d, easing: EASE, fill: "backwards" },
         );
 
-  // ---- Entrance (spec §8 A)
+  // ---- Entrance (SPEC §7.1: every type, every turn, no loop)
+  q("photo").forEach((el) => {
+    if (reduce) fade(el, 0);
+    else {
+      A(
+        el,
+        [
+          { opacity: 0, transform: "scale(.8)" },
+          { opacity: 1, transform: "scale(1.04)", offset: 0.7 },
+          { opacity: 1, transform: "scale(1)" },
+        ],
+        { duration: 850, delay: 0, easing: EASE, fill: "backwards" },
+      );
+    }
+  });
   q("badge").forEach((el) => {
     if (!reduce && o.type === "welcome" && fx.welcomePop) {
       A(
@@ -107,15 +122,28 @@ export function playCard(card: HTMLElement, o: PlayOptions): () => void {
           { opacity: 1, transform: "scale(1.15)", offset: 0.6 },
           { opacity: 1, transform: "scale(1)" },
         ],
-        { duration: 700, delay: 60, easing: EASE, fill: "backwards" },
+        { duration: 700, delay: 120, easing: EASE, fill: "backwards" },
       );
-    } else rise(el, 0);
+    } else rise(el, 120);
   });
-  q("rise").forEach((el) => rise(el, (Number(el.dataset.i) || 0) * 130));
-  // The headline comes in as one piece with the staggered reveal.
+  q("rise").forEach((el) => rise(el, Number(el.dataset.delay) || 0));
+  q("rule").forEach((el) => {
+    if (reduce) fade(el, 320);
+    else A(el, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 720, delay: 320, easing: EASE, fill: "backwards" });
+  });
   q("word").forEach((el) => {
-    if (reduce) fade(el, 260);
-    else rise(el, 280);
+    const i = Number(el.dataset.i) || 0;
+    if (reduce) fade(el, 400);
+    else {
+      A(
+        el,
+        [
+          { opacity: 0, transform: "translateY(50%) rotate(3deg)", filter: "blur(6px)" },
+          { opacity: 1, transform: "none", filter: "blur(0px)" },
+        ],
+        { duration: 680, delay: 400 + i * 90, easing: EASE, fill: "backwards" },
+      );
+    }
   });
 
   q("burst").forEach((el) => {
@@ -123,23 +151,23 @@ export function playCard(card: HTMLElement, o: PlayOptions): () => void {
   });
 
   if (!reduce) {
-    // ---- Per card type (spec §8 C)
+    // ---- Icon motion + per-type effects (SPEC §7.2, §7.3)
     q("icon").forEach((el) => {
       if (!fx.iconMotion) return;
       const m = ICON_MOTION[o.type];
       A(el, m.keyframes, {
-        duration: m.duration, delay: 650, easing: "ease-in-out", iterations: m.iterations ?? 1, fill: "backwards",
+        duration: m.duration, delay: 900, easing: "ease-in-out", iterations: m.iterations ?? 1, fill: "backwards",
       });
     });
     const pal = getComputedStyle(card);
     const colors = ["--t-c1", "--t-c2", "--t-head"].map((v) => pal.getPropertyValue(v).trim());
     q("burst").forEach((el) => {
-      if (o.type === "birthday") confetti(el, colors, A);
-      if (o.type === "congrats" && fx.congratsFx) fireworks(el, colors, A);
+      if (o.type === "birthday") confetti(card, el, colors, A);
+      if (o.type === "congrats" && fx.congratsFx) fireworks(card, el, colors, A);
     });
     if (o.type === "milestone" && fx.countUp) {
       q("word").forEach((el) => {
-        if (el.dataset.count) countUp(el, el.dataset.count, 300, () => cancelled);
+        if (el.dataset.count) countUp(el, el.dataset.count, 400, () => cancelled);
       });
     }
   }
@@ -158,20 +186,34 @@ export function playCard(card: HTMLElement, o: PlayOptions): () => void {
 
 type Animate = (el: Element, k: Keyframe[], o: KeyframeAnimationOptions) => Animation | null;
 
-// 40 pieces from the lower left, flung up and out (spec §8 C, Birthday).
-function confetti(el: HTMLElement, cols: string[], A: Animate) {
-  const w = el.clientWidth;
-  const h = el.clientHeight;
-  for (let i = 0; i < 40; i++) {
+// Where bursts start: the centre of the photo, or the top of the headline.
+function origin(card: HTMLElement) {
+  const r = card.getBoundingClientRect();
+  const t = card.querySelector<HTMLElement>(".ec-photo") ?? card.querySelector<HTMLElement>(".ec-title");
+  const b = (t ?? card).getBoundingClientRect();
+  const isPhoto = t?.classList.contains("ec-photo");
+  return {
+    x: b.left - r.left + b.width / 2,
+    y: b.top - r.top + (isPhoto ? b.height / 2 : 0),
+    w: r.width,
+    h: r.height,
+  };
+}
+
+// 44 pieces from the photo centre, flung up and out (SPEC §7.3, Birthday).
+function confetti(card: HTMLElement, el: HTMLElement, cols: string[], A: Animate) {
+  const o = origin(card);
+  const m = Math.min(o.w, o.h);
+  for (let i = 0; i < 44; i++) {
     const p = document.createElement("span");
-    const sz = w * (0.008 + Math.random() * 0.008);
-    p.style.cssText = `position:absolute;left:${30 + Math.random() * 10}%;top:55%;width:${sz}px;height:${
+    const sz = m * (0.012 + Math.random() * 0.012);
+    p.style.cssText = `position:absolute;left:${o.x}px;top:${o.y}px;width:${sz}px;height:${
       sz * (Math.random() < 0.5 ? 1 : 2.2)
     }px;background:${cols[i % 3]};border-radius:${Math.random() < 0.3 ? "50%" : "2px"};opacity:0`;
     el.appendChild(p);
-    const ang = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.1;
-    const v = h * (0.35 + Math.random() * 0.45);
-    const dx = Math.cos(ang) * v * 1.4;
+    const ang = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.2;
+    const v = m * (0.35 + Math.random() * 0.4);
+    const dx = Math.cos(ang) * v * 1.3;
     const dy = Math.sin(ang) * v;
     const r = (Math.random() - 0.5) * 1080;
     const an = A(
@@ -180,11 +222,11 @@ function confetti(el: HTMLElement, cols: string[], A: Animate) {
         { opacity: 0, transform: "translate(0,0) rotate(0deg)" },
         { opacity: 1, offset: 0.04 },
         { opacity: 1, transform: `translate(${dx}px,${dy}px) rotate(${r / 2}deg)`, offset: 0.35 },
-        { opacity: 0, transform: `translate(${dx * 1.3}px,${dy + h * 0.75}px) rotate(${r}deg)` },
+        { opacity: 0, transform: `translate(${dx * 1.3}px,${dy + o.h * 0.7}px) rotate(${r}deg)` },
       ],
       {
-        duration: 2200 + Math.random() * 900,
-        delay: 350 + Math.random() * 250,
+        duration: 2400 + Math.random() * 900,
+        delay: 500 + Math.random() * 250,
         easing: "cubic-bezier(.15,.7,.4,1)",
         fill: "backwards",
       },
@@ -193,15 +235,15 @@ function confetti(el: HTMLElement, cols: string[], A: Animate) {
   }
 }
 
-// Three bursts of 18 sparks (spec §8 C, Congratulations).
-function fireworks(el: HTMLElement, cols: string[], A: Animate) {
-  const w = el.clientWidth;
-  const h = el.clientHeight;
-  ([[0.6, 0.3, 0], [0.86, 0.72, 380], [0.72, 0.5, 760]] as const).forEach(([x, y, d]) => {
-    const R = w * (0.09 + Math.random() * 0.04);
+// Three bursts of 18 sparks (SPEC §7.3, Congratulations).
+function fireworks(card: HTMLElement, el: HTMLElement, cols: string[], A: Animate) {
+  const r = card.getBoundingClientRect();
+  const m = Math.min(r.width, r.height);
+  ([[0.22, 0.2, 0], [0.8, 0.28, 380], [0.68, 0.78, 760]] as const).forEach(([x, y, d]) => {
+    const R = m * (0.14 + Math.random() * 0.05);
     for (let i = 0; i < 18; i++) {
       const p = document.createElement("span");
-      const sz = w * 0.007;
+      const sz = m * 0.011;
       const ang = (i / 18) * Math.PI * 2;
       const c = cols[i % 3];
       p.style.cssText = `position:absolute;left:${x * 100}%;top:${y * 100}%;width:${sz}px;height:${sz}px;border-radius:50%;background:${c};box-shadow:0 0 ${sz * 2}px ${c};opacity:0`;
@@ -212,16 +254,16 @@ function fireworks(el: HTMLElement, cols: string[], A: Animate) {
           { opacity: 0, transform: "translate(0,0) scale(.4)" },
           { opacity: 1, offset: 0.08 },
           { opacity: 1, transform: `translate(${Math.cos(ang) * R * 0.85}px,${Math.sin(ang) * R * 0.85}px) scale(1)`, offset: 0.55 },
-          { opacity: 0, transform: `translate(${Math.cos(ang) * R}px,${Math.sin(ang) * R + h * 0.06}px) scale(.6)` },
+          { opacity: 0, transform: `translate(${Math.cos(ang) * R}px,${Math.sin(ang) * R + m * 0.06}px) scale(.6)` },
         ],
-        { duration: 1300, delay: 900 + d, easing: "cubic-bezier(.2,.8,.3,1)", fill: "backwards" },
+        { duration: 1300, delay: 1100 + d, easing: "cubic-bezier(.2,.8,.3,1)", fill: "backwards" },
       );
       if (an) an.onfinish = () => p.remove();
     }
   });
 }
 
-// Milestone: a headline word containing a number counts up from 0 (spec §8 C).
+// Milestone: a headline word containing a number counts up from 0 (SPEC §7.3).
 function countUp(el: HTMLElement, finalText: string, delay: number, isCancelled: () => boolean) {
   const node = document.createTreeWalker(el, NodeFilter.SHOW_TEXT).nextNode();
   if (!node) return;

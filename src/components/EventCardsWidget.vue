@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import type { EventCardData, EventCardsAppConfig } from "../announcementsTypes.ts";
 import EventCard from "./eventCards/EventCard.vue";
+import EmptyHint from "./EmptyHint.vue";
 import { dateKey } from "./eventCards/eventCardsData.ts";
 import "./eventCards/eventCards.css";
 
@@ -86,5 +87,7 @@ onUnmounted(() => {
       :theme="config.theme"
       :today="today"
     />
+    <EmptyHint v-else-if="config.editorPreview" :theme="config.theme" title="No cards yet"
+      text="Click Add card and create your first card to see it here." />
   </div>
 </template>

@@ -6,6 +6,7 @@ import { useAutoFit } from "./rotatingNotices/useAutoFit.ts";
 import { useRealertSweep } from "./rotatingNotices/useRealertSweep.ts";
 import CriticalBar from "./rotatingNotices/CriticalBar.vue";
 import NoticeCardItem from "./rotatingNotices/NoticeCardItem.vue";
+import EmptyHint from "./EmptyHint.vue";
 
 // Pure rendering component: takes a resolved config and draws the board.
 // Knows nothing about Ignition/postMessage — that wiring lives in App.vue.
@@ -28,6 +29,7 @@ const config = computed<RotatingNoticesAppConfig>(() => {
 });
 
 const { cards } = useBoardRotation(config);
+const showEmptyHint = computed(() => Boolean(props.config.editorPreview) && config.value.boards.length === 0);
 const { sweeping } = useRealertSweep(config);
 
 const rootEl = ref<HTMLElement | null>(null);
@@ -58,6 +60,8 @@ const orientation = computed<"landscape" | "portrait">(() =>
     <NoticeCardItem v-for="(card, i) in cards" :key="i" :card="card" :order="i" :orientation="orientation"
       :staggered-entrance="config.staggeredEntrance" :glow-enabled="config.urgentGlowPulse" :sweeping="sweeping" />
   </div>
+  <EmptyHint v-if="showEmptyHint" :theme="config.theme" title="No boards yet"
+    text="Click Manage boards and add your first board to see it here." />
 </template>
 
 <style scoped>
