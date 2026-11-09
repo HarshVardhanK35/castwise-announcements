@@ -175,6 +175,15 @@
 .sl-row .sl-tag { padding: 0.3em 0.5em; border-radius: 0.3em; font-size: 1em; }
 .sl-row-none { justify-self: start; display: block; width: 1.6em; height: 0.14em; margin-left: 0.55em; border-radius: 0.07em; background: var(--sl-muted); }
 
+/* A browser without subgrid (Chromium before 117): the head and every row get the column template themselves, with fixed shares (--cols-fb) so the columns line up. */
+@supports not (grid-template-columns: subgrid) {
+  .sl-col-head,
+  .sl-row {
+    grid-template-columns: var(--cols-fb);
+    column-gap: 0.7em;
+  }
+}
+
 /* ---- Grid view (SPEC §6.2) ---- */
 .sl-grid {
   flex: 1; min-height: 0; display: grid; gap: 0.55em;
