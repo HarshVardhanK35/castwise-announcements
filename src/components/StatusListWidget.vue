@@ -114,6 +114,11 @@ const ledgerCols = computed(() =>
     ? "minmax(0,1.5fr) minmax(max-content,1fr) minmax(max-content,1fr)"
     : "minmax(0,1.5fr) minmax(max-content,1fr)",
 );
+// For a browser without subgrid (before Chromium 117), where every row has its own columns:
+// fixed shares instead of content-sized ones, so the columns still line up row to row.
+const ledgerColsFallback = computed(() =>
+  discOn.value ? "minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr)" : "minmax(0,1.5fr) minmax(0,1fr)",
+);
 const nameFs = computed(() => (listCols.value === 2 ? "1.2em" : "1.3em"));
 
 const gridCols = computed(() => Math.min(shape.value.gc, n.value));
@@ -217,7 +222,7 @@ const nameClass = (it: BoardItem) => {
           v-for="(col, c) in columns"
           :key="c"
           class="sl-col"
-          :style="{ '--cols': ledgerCols, '--name-fs': nameFs }"
+          :style="{ '--cols': ledgerCols, '--cols-fb': ledgerColsFallback, '--name-fs': nameFs }"
         >
           <div class="sl-col-head">
             <span>Item</span><span>Status</span><span v-if="discOn">Offer</span>

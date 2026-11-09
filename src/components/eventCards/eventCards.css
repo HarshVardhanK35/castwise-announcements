@@ -35,54 +35,64 @@
    --t-c1 accent · --t-c2 second accent · --t-head headline/badge text
    --t-glow-* background glows · --t-particle-* particle colours */
 .ec-type-birthday {
-  --t-c1: #f778ba; --t-c2: #e3b341; --t-head: #fcd3e8;
+  --t-c1: #f778ba;
+  --t-tint-fb: rgba(247, 120, 186, 0.16); --t-c2: #e3b341; --t-head: #fcd3e8;
   --t-glow-br: rgba(247, 120, 186, 0.26); --t-glow-tl: rgba(227, 179, 65, 0.14);
   --t-particle-1: rgba(247, 120, 186, 0.55); --t-particle-2: rgba(227, 179, 65, 0.55);
 }
 .ec-type-milestone {
-  --t-c1: #39c5cf; --t-c2: #58a6ff; --t-head: #c9f1f4;
+  --t-c1: #39c5cf;
+  --t-tint-fb: rgba(57, 197, 207, 0.16); --t-c2: #58a6ff; --t-head: #c9f1f4;
   --t-glow-br: rgba(57, 197, 207, 0.26); --t-glow-tl: rgba(88, 166, 255, 0.14);
   --t-particle-1: rgba(57, 197, 207, 0.55); --t-particle-2: rgba(88, 166, 255, 0.55);
 }
 .ec-type-welcome {
-  --t-c1: #3fb950; --t-c2: #a2d96b; --t-head: #d3f4d9;
+  --t-c1: #3fb950;
+  --t-tint-fb: rgba(63, 185, 80, 0.16); --t-c2: #a2d96b; --t-head: #d3f4d9;
   --t-glow-br: rgba(63, 185, 80, 0.26); --t-glow-tl: rgba(162, 217, 107, 0.14);
   --t-particle-1: rgba(63, 185, 80, 0.55); --t-particle-2: rgba(162, 217, 107, 0.55);
 }
 .ec-type-congrats {
-  --t-c1: #a371f7; --t-c2: #e3b341; --t-head: #e4d6ff;
+  --t-c1: #a371f7;
+  --t-tint-fb: rgba(163, 113, 247, 0.16); --t-c2: #e3b341; --t-head: #e4d6ff;
   --t-glow-br: rgba(163, 113, 247, 0.26); --t-glow-tl: rgba(227, 179, 65, 0.14);
   --t-particle-1: rgba(163, 113, 247, 0.55); --t-particle-2: rgba(227, 179, 65, 0.55);
 }
 .ec-type-holiday {
-  --t-c1: #f85149; --t-c2: #3fb950; --t-head: #ffd7d3;
+  --t-c1: #f85149;
+  --t-tint-fb: rgba(248, 81, 73, 0.16); --t-c2: #3fb950; --t-head: #ffd7d3;
   --t-glow-br: rgba(248, 81, 73, 0.26); --t-glow-tl: rgba(63, 185, 80, 0.14);
   --t-particle-1: rgba(248, 81, 73, 0.55); --t-particle-2: rgba(63, 185, 80, 0.55);
 }
 
 /* Light: pastel glows, deepened accents for contrast on white */
 .ec-root[data-theme="light"] .ec-type-birthday {
-  --t-c1: #bf3989; --t-c2: #9a6700; --t-head: #4d1033;
+  --t-c1: #bf3989;
+  --t-tint-fb: rgba(191, 57, 137, 0.12); --t-c2: #9a6700; --t-head: #4d1033;
   --t-glow-br: rgba(249, 168, 212, 0.5); --t-glow-tl: rgba(253, 230, 138, 0.55);
   --t-particle-1: rgba(191, 57, 137, 0.9); --t-particle-2: rgba(154, 103, 0, 0.9);
 }
 .ec-root[data-theme="light"] .ec-type-milestone {
-  --t-c1: #0f7b84; --t-c2: #0969da; --t-head: #0b3b40;
+  --t-c1: #0f7b84;
+  --t-tint-fb: rgba(15, 123, 132, 0.12); --t-c2: #0969da; --t-head: #0b3b40;
   --t-glow-br: rgba(125, 211, 252, 0.5); --t-glow-tl: rgba(153, 246, 228, 0.55);
   --t-particle-1: rgba(15, 123, 132, 0.9); --t-particle-2: rgba(9, 105, 218, 0.9);
 }
 .ec-root[data-theme="light"] .ec-type-welcome {
-  --t-c1: #1a7f37; --t-c2: #4d7c0f; --t-head: #0f3d1d;
+  --t-c1: #1a7f37;
+  --t-tint-fb: rgba(26, 127, 55, 0.12); --t-c2: #4d7c0f; --t-head: #0f3d1d;
   --t-glow-br: rgba(134, 239, 172, 0.5); --t-glow-tl: rgba(217, 249, 157, 0.55);
   --t-particle-1: rgba(26, 127, 55, 0.9); --t-particle-2: rgba(77, 124, 15, 0.9);
 }
 .ec-root[data-theme="light"] .ec-type-congrats {
-  --t-c1: #8250df; --t-c2: #9a6700; --t-head: #2e1065;
+  --t-c1: #8250df;
+  --t-tint-fb: rgba(130, 80, 223, 0.12); --t-c2: #9a6700; --t-head: #2e1065;
   --t-glow-br: rgba(196, 181, 253, 0.5); --t-glow-tl: rgba(253, 230, 138, 0.55);
   --t-particle-1: rgba(130, 80, 223, 0.9); --t-particle-2: rgba(154, 103, 0, 0.9);
 }
 .ec-root[data-theme="light"] .ec-type-holiday {
-  --t-c1: #cf222e; --t-c2: #1a7f37; --t-head: #4c0d0d;
+  --t-c1: #cf222e;
+  --t-tint-fb: rgba(207, 34, 46, 0.12); --t-c2: #1a7f37; --t-head: #4c0d0d;
   --t-glow-br: rgba(252, 165, 165, 0.5); --t-glow-tl: rgba(187, 247, 208, 0.55);
   --t-particle-1: rgba(207, 34, 46, 0.9); --t-particle-2: rgba(26, 127, 55, 0.9);
 }
@@ -107,6 +117,10 @@
 }
 .ec-root[data-theme="light"] .ec-card {
   --tint: color-mix(in srgb, var(--t-c1) 12%, transparent);
+}
+/* A browser without color-mix() (Chromium before 111) uses the tint worked out in the palettes above. */
+@supports not (background: color-mix(in srgb, red, blue)) {
+  .ec-card { --tint: var(--t-tint-fb); }
 }
 
 /* ---- 4. Background layers ---- */
@@ -150,6 +164,14 @@
   box-shadow: 0 0 0 calc(var(--u) * 1.2) var(--tint), 0 0 calc(var(--u) * 10) var(--t-glow-br);
   background: var(--tint);
   overflow: hidden;
+}
+/* A browser without aspect-ratio (Chromium before 88): an empty block as tall as the photo is wide keeps it square. */
+@supports not (aspect-ratio: 1) {
+  .ec-photo::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+  }
 }
 .ec-photo__img { position: absolute; inset: 0; background: center / cover no-repeat; }
 
